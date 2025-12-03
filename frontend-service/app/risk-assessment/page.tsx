@@ -44,7 +44,7 @@ import {
 import Link from 'next/link';
 
 // Dynamically import Plotly to avoid SSR issues
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+const Plot = dynamic(() => import('react-plotly.js'), { ssr: false }) as any;
 
 // Sample risk assessment data
 const riskData = {

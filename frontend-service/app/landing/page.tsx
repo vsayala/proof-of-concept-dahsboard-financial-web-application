@@ -13,7 +13,6 @@ import {
   ClockIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline';
-import ProcessMiningFlowchart from '../../components/ProcessMiningFlowchart';
 
 export default function LandingPage() {
   const features = [
@@ -60,7 +59,7 @@ export default function LandingPage() {
       <div className="relative overflow-hidden">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-16">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
@@ -80,7 +79,7 @@ export default function LandingPage() {
               {stats.map((stat, index) => (
                 <motion.div
                   key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 1, y: 0 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20"
@@ -115,22 +114,11 @@ export default function LandingPage() {
         </div>
       </div>
 
-        {/* Process Mining Flowchart Section - Full Width */}
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="w-full"
-          >
-            <ProcessMiningFlowchart />
-          </motion.div>
-        </div>
 
       {/* Features Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
@@ -146,7 +134,7 @@ export default function LandingPage() {
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className="group"
@@ -177,7 +165,7 @@ export default function LandingPage() {
       <div className="bg-white/5 backdrop-blur-md border-t border-white/10">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-16">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
@@ -191,7 +179,7 @@ export default function LandingPage() {
               ].map((tech, index) => (
                 <motion.div
                   key={tech.name}
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 1, scale: 1 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                   className="text-center"

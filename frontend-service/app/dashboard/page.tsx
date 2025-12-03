@@ -23,7 +23,7 @@ import {
 } from 'recharts';
 
 // Dynamically import Plotly to avoid SSR issues
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+const Plot = dynamic(() => import('react-plotly.js'), { ssr: false }) as any;
 import {
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,

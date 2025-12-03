@@ -7,15 +7,15 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to landing page
-    router.push('/landing');
+    // Immediate client-side redirect
+    router.replace('/landing');
   }, [router]);
 
+  // Minimal loading state - will be very brief
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
-        <p className="mt-4 text-lg text-white">Redirecting to Financial Intelligence Platform...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
       </div>
     </div>
   );
