@@ -77,18 +77,22 @@ class PythonRAGService {
       });
 
       // Transform response to match existing RAG service format
+      const answer = response.data.answer || response.data.response || 'I could not generate a response.';
+      
       return {
-        response: response.data.answer,
+        response: answer,
+        answer: answer, // Also include as 'answer' for compatibility
         context: {
-          sources: response.data.sources,
-          hits: response.data.hits,
-          retrievalCount: response.data.retrieval_count
+          sources: response.data.sources || [],
+          hits: response.data.hits || [],
+          retrievalCount: response.data.retrieval_count || 0
         },
-        usedLLM: 'ollama',
+        usedLLM: true,
         model: process.env.OLLAMA_MODEL || 'llama2:7b',
         processingTime: duration,
-        sources: response.data.sources,
-        hits: response.data.hits
+        sources: response.data.sources || [],
+        hits: response.data.hits || [],
+        retrievalCount: response.data.retrieval_count || 0
       };
 
     } catch (error) {
@@ -97,11 +101,24 @@ class PythonRAGService {
         module: 'pythonRAGService',
         operation: 'generate_response',
         duration,
-        query: query?.substring(0, 100)
+        query: query?.substring(0, 100),
+        errorCode: error.code,
+        statusCode: error.response?.status
       });
 
-      // Return error response that can be handled by caller
-      throw new Error(`Python RAG service error: ${error.message}`);
+      // Provide more detailed error information
+      if (error.response) {
+        // Server responded with error status
+        const statusCode = error.response.status;
+        const errorMessage = error.response.data?.detail || error.response.data?.message || error.message;
+        throw new Error(`Python RAG service error (${statusCode}): ${errorMessage}`);
+      } else if (error.request) {
+        // Request was made but no response received
+        throw new Error(`Python RAG service is not available at ${this.ragServiceUrl}. Please ensure the service is running.`);
+      } else {
+        // Error setting up request
+        throw new Error(`Python RAG service error: ${error.message}`);
+      }
     }
   }
 }
