@@ -1,0 +1,47 @@
+{
+  "name": "audit-poc-mongodb-setup",
+  "version": "1.0.0",
+  "description": "MongoDB setup for Audit POC with multiple environments and JSON data import",
+  "main": "test-mongodb.js",
+  "scripts": {
+    "setup": "./setup.sh",
+    "test": "node test-mongodb.js",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "restart": "docker-compose restart",
+    "status": "docker-compose ps",
+    "backup": "docker exec audit-poc-mongodb mongodump --out /data/backups/$(date +%Y%m%d)",
+    "shell": "docker exec -it audit-poc-mongodb mongosh -u admin -p admin123",
+    "express": "open http://localhost:8081"
+  },
+  "keywords": [
+    "mongodb",
+    "audit",
+    "poc",
+    "docker",
+    "database",
+    "json",
+    "import"
+  ],
+  "author": "Audit POC Team",
+  "license": "MIT",
+  "dependencies": {
+    "mongodb": "^6.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/audit-poc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/audit-poc/issues"
+  },
+  "homepage": "https://github.com/your-org/audit-poc#readme"
+}

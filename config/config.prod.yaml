@@ -1,0 +1,224 @@
+# Production Configuration
+# This file contains configuration for production environment
+# Copy this file and update with your production values
+
+# Application Settings
+app:
+  name: "Audit POC"
+  version: "1.0.0"
+  environment: "production"
+  port: 3000
+  frontend_port: 3001
+
+# Database Configurations
+databases:
+  mongodb:
+    enabled: true
+    host: "${MONGODB_HOST}"
+    port: "${MONGODB_PORT:-27017}"
+    database: "${MONGODB_DATABASE}"
+    username: "${MONGODB_USERNAME}"
+    password: "${MONGODB_PASSWORD}"
+    auth_source: "${MONGODB_AUTH_SOURCE:-admin}"
+    connection_string: "${MONGODB_URI}"
+    options:
+      useNewUrlParser: true
+      useUnifiedTopology: true
+      maxPoolSize: 50
+      serverSelectionTimeoutMS: 10000
+      socketTimeoutMS: 45000
+      ssl: true
+      sslValidate: true
+
+  sql:
+    enabled: true  # Enable for production
+    host: "${SQL_SERVER_HOST}"
+    port: "${SQL_SERVER_PORT:-1433}"
+    database: "${SQL_DATABASE}"
+    username: "${SQL_USER}"
+    password: "${SQL_PASSWORD}"
+    options:
+      encrypt: true
+      trustServerCertificate: false
+      enableArithAbort: true
+      requestTimeout: 30000
+      connectionTimeout: 30000
+
+  redis:
+    enabled: true  # Enable for production caching
+    host: "${REDIS_HOST}"
+    port: "${REDIS_PORT:-6379}"
+    password: "${REDIS_PASSWORD}"
+    db: 0
+    tls: true
+
+# API Configuration
+api:
+  base_url: "${API_BASE_URL}"
+  timeout: 30000
+  rate_limit:
+    window_ms: 900000  # 15 minutes
+    max_requests: 100
+
+# Frontend Configuration
+frontend:
+  base_url: "${FRONTEND_BASE_URL}"
+  api_url: "${API_BASE_URL}"
+  rag_api_url: "${RAG_API_URL}"
+  embedding_api_url: "${EMBEDDING_API_URL}"
+
+# Logging Configuration
+logging:
+  level: "warn"  # Production should use warn or error
+  format: "json"
+  files:
+    - name: "api.log"
+      level: "info"
+      max_size: "50MB"
+      max_files: 10
+    - name: "error.log"
+      level: "error"
+      max_size: "50MB"
+      max_files: 10
+    - name: "combined.log"
+      level: "info"
+      max_size: "50MB"
+      max_files: 10
+  console:
+    enabled: false  # Disable console logging in production
+    level: "error"
+
+# Security Configuration
+security:
+  cors:
+    enabled: true
+    origins: "${ALLOWED_ORIGINS}".split(",")
+    credentials: true
+    methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+    allowed_headers:
+      - "Content-Type"
+      - "Authorization"
+      - "X-Requested-With"
+  
+  helmet:
+    enabled: true
+    content_security_policy:
+      default_src: ["'self'"]
+      style_src: ["'self'"]
+      script_src: ["'self'"]
+      img_src: ["'self'", "https:"]
+  
+  jwt:
+    secret: "${JWT_SECRET}"
+    expires_in: "24h"
+  
+  bcrypt:
+    salt_rounds: 12
+
+# Data Sources Configuration
+data_sources:
+  sql:
+    enabled: true
+    type: "relational"
+    capabilities:
+      - "journal_entries"
+      - "payments"
+      - "trades"
+      - "master_data"
+  
+  mongodb:
+    enabled: true
+    type: "document"
+    capabilities:
+      - "system_logs"
+      - "audit_trail"
+      - "exception_logs"
+      - "process_traces"
+  
+  deltalake:
+    enabled: true  # Enable for production
+    type: "data_lake"
+    host: "${DATABRICKS_HOST}"
+    token: "${DATABRICKS_TOKEN}"
+    catalog: "${DATABRICKS_CATALOG:-hive_metastore}"
+    schema: "${DATABRICKS_SCHEMA:-default}"
+    capabilities:
+      - "financial_reports"
+      - "external_data"
+  
+  flatfiles:
+    enabled: true  # Enable for production
+    type: "file_storage"
+    capabilities:
+      - "supporting_docs"
+      - "invoices"
+      - "contracts"
+      - "tax_forms"
+
+# Cloud Storage (Production)
+cloud_storage:
+  azure:
+    enabled: true
+    connection_string: "${AZURE_STORAGE_CONNECTION_STRING}"
+    account_name: "${AZURE_STORAGE_ACCOUNT_NAME}"
+    container_name: "${AZURE_STORAGE_CONTAINER:-audit-data}"
+  
+  aws:
+    enabled: true
+    access_key_id: "${AWS_ACCESS_KEY_ID}"
+    secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
+    region: "${AWS_REGION:-us-east-1}"
+    bucket_name: "${AWS_S3_BUCKET:-audit-poc-data}"
+  
+  gcp:
+    enabled: true
+    project_id: "${GCP_PROJECT_ID}"
+    key_filename: "${GCP_KEY_FILENAME}"
+    bucket_name: "${GCP_BUCKET_NAME:-audit-poc-data}"
+
+# Performance Monitoring
+monitoring:
+  enabled: true
+  slow_request_threshold_ms: 5000
+  performance_logging: true
+  # Production monitoring tools
+  # prometheus:
+  #   enabled: true
+  #   endpoint: "/metrics"
+  # grafana:
+  #   enabled: true
+  #   dashboard_url: "${GRAFANA_DASHBOARD_URL}"
+
+# Health Checks
+health_checks:
+  enabled: true
+  interval_seconds: 30
+  timeout_seconds: 10
+  retries: 3
+
+# Docker/Kubernetes Configuration
+deployment:
+  replicas: 3
+  resources:
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+    requests:
+      cpu: "1"
+      memory: "1Gi"
+  
+  # Kubernetes specific
+  # namespace: "audit-poc"
+  # service_account: "audit-poc-sa"
+  # ingress:
+  #   enabled: true
+  #   host: "api.auditpoc.com"
+  #   tls:
+  #     enabled: true
+  #     secret_name: "audit-poc-tls"
+

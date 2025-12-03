@@ -1,0 +1,300 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgb(203, 213, 225);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgb(148, 163, 184);
+}
+
+.scrollbar-thumb-slate-300::-webkit-scrollbar-thumb {
+  background: rgb(203, 213, 225);
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  /* Chat Container */
+  .chat-container {
+    @apply flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100;
+  }
+
+  /* Header */
+  .chat-header {
+    @apply bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm;
+  }
+
+  .header-content {
+    @apply max-w-6xl mx-auto px-6 py-4 flex items-center justify-between;
+  }
+
+  .logo-section {
+    @apply flex items-center space-x-3;
+  }
+
+  .logo-icon {
+    @apply w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg;
+  }
+
+  .brand-text {
+    @apply text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent;
+  }
+
+  .header-actions {
+    @apply flex items-center space-x-4;
+  }
+
+  /* Chat Area */
+  .chat-main {
+    @apply flex-1 flex flex-col max-w-6xl mx-auto w-full px-6 py-6;
+  }
+
+  .chat-messages {
+    @apply flex-1 overflow-y-auto space-y-6 pb-4;
+  }
+
+  .message-group {
+    @apply flex flex-col space-y-3;
+  }
+
+  .message {
+    @apply flex items-start space-x-3 max-w-4xl;
+  }
+
+  .message.user {
+    @apply flex-row-reverse space-x-reverse;
+  }
+
+  .message.assistant {
+    @apply flex-row;
+  }
+
+  .message-avatar {
+    @apply w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-md;
+  }
+
+  .message-avatar.user {
+    @apply bg-gradient-to-br from-blue-500 to-blue-600;
+  }
+
+  .message-avatar.assistant {
+    @apply bg-gradient-to-br from-indigo-500 to-purple-600;
+  }
+
+  .message-content {
+    @apply flex-1 max-w-3xl;
+  }
+
+  .message-bubble {
+    @apply px-4 py-3 rounded-2xl shadow-sm border;
+  }
+
+  .message-bubble.user {
+    @apply bg-gradient-to-br from-blue-500 to-blue-600 text-white border-blue-400;
+  }
+
+  .message-bubble.assistant {
+    @apply bg-white text-slate-800 border-slate-200 shadow-md;
+  }
+
+  .message-text {
+    @apply text-sm leading-relaxed;
+  }
+
+  .message-time {
+    @apply text-xs opacity-70 mt-2;
+  }
+
+  .message-time.user {
+    @apply text-blue-100;
+  }
+
+  .message-time.assistant {
+    @apply text-slate-500;
+  }
+
+  /* Input Area */
+  .chat-input-container {
+    @apply bg-white/80 backdrop-blur-md border-t border-slate-200/60 shadow-lg;
+  }
+
+  .input-content {
+    @apply max-w-6xl mx-auto px-6 py-4;
+  }
+
+  .input-wrapper {
+    @apply relative flex items-end space-x-3;
+  }
+
+  .message-input {
+    @apply flex-1 min-h-[60px] max-h-32 px-4 py-3 border border-slate-300 rounded-2xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all duration-200;
+  }
+
+  .send-button {
+    @apply w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+
+  .send-button:disabled {
+    @apply opacity-50 cursor-not-allowed hover:scale-100;
+  }
+
+  /* Quick Actions */
+  .quick-actions {
+    @apply flex items-center space-x-2 mt-3;
+  }
+
+  .quick-action-btn {
+    @apply px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors duration-200;
+  }
+
+  /* Welcome Message */
+  .welcome-section {
+    @apply text-center py-12;
+  }
+
+  .welcome-title {
+    @apply text-3xl font-bold text-slate-800 mb-3;
+  }
+
+  .welcome-subtitle {
+    @apply text-lg text-slate-600 mb-8 max-w-2xl mx-auto;
+  }
+
+  .feature-grid {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto;
+  }
+
+  .feature-card {
+    @apply bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-slate-200/60 hover:shadow-md transition-all duration-300;
+  }
+
+  .feature-icon {
+    @apply w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mb-4 mx-auto;
+  }
+
+  .feature-title {
+    @apply text-lg font-semibold text-slate-800 mb-2;
+  }
+
+  .feature-description {
+    @apply text-sm text-slate-600;
+  }
+
+  /* Typing Indicator */
+  .typing-indicator {
+    @apply flex items-center space-x-2 px-4 py-3 bg-slate-100 rounded-2xl w-fit;
+  }
+
+  .typing-dot {
+    @apply w-2 h-2 bg-slate-400 rounded-full animate-pulse;
+  }
+
+  .typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  /* Scrollbar */
+  .chat-messages::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .chat-messages::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .chat-messages::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+  }
+
+  .chat-messages::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+  }
+
+  /* Animations */
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-in-up {
+    animation: slideInUp 0.3s ease-out;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .chat-main {
+      @apply px-4 py-4;
+    }
+    
+    .input-content {
+      @apply px-4 py-3;
+    }
+    
+    .header-content {
+      @apply px-4 py-3;
+    }
+    
+    .message {
+      @apply max-w-full;
+    }
+    
+    .message-content {
+      @apply max-w-full;
+    }
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent;
+  }
+
+  .shadow-soft {
+    box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  .backdrop-blur-soft {
+    backdrop-filter: blur(8px);
+  }
+}
