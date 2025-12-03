@@ -97,7 +97,7 @@ function createUsersForEnvironment(environment) {
   const users = [
     {
       username: 'admin',
-      email: `admin@${environment}.auditpoc.com`,
+      email: `admin@${environment}.financialdashboard.com`,
       full_name: 'System Administrator',
       role: 'admin',
       is_active: true,
@@ -108,7 +108,7 @@ function createUsersForEnvironment(environment) {
     },
     {
       username: 'auditor1',
-      email: `auditor1@${environment}.auditpoc.com`,
+      email: `auditor1@${environment}.financialdashboard.com`,
       full_name: 'John Auditor',
       role: 'auditor',
       is_active: true,
@@ -119,7 +119,7 @@ function createUsersForEnvironment(environment) {
     },
     {
       username: 'analyst1',
-      email: `analyst1@${environment}.auditpoc.com`,
+      email: `analyst1@${environment}.financialdashboard.com`,
       full_name: 'Sarah Analyst',
       role: 'analyst',
       is_active: true,
@@ -130,7 +130,7 @@ function createUsersForEnvironment(environment) {
     },
     {
       username: 'compliance1',
-      email: `compliance1@${environment}.auditpoc.com`,
+      email: `compliance1@${environment}.financialdashboard.com`,
       full_name: 'Mike Compliance',
       role: 'compliance_officer',
       is_active: true,
@@ -141,7 +141,7 @@ function createUsersForEnvironment(environment) {
     },
     {
       username: 'finance1',
-      email: `finance1@${environment}.auditpoc.com`,
+      email: `finance1@${environment}.financialdashboard.com`,
       full_name: 'Lisa Finance',
       role: 'finance_user',
       is_active: true,

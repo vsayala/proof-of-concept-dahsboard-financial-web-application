@@ -217,7 +217,7 @@ deployment:
   # service_account: "audit-poc-sa"
   # ingress:
   #   enabled: true
-  #   host: "api.auditpoc.com"
+  #   host: "api.financialdashboard.com"
   #   tls:
   #     enabled: true
   #     secret_name: "audit-poc-tls"

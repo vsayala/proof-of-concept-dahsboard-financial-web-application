@@ -7,7 +7,7 @@ const logger = require('../utils/logger');
 const sqlConfig = {
   user: process.env.SQL_USER || 'sa',
   password: process.env.SQL_PASSWORD || 'YourStrong@Passw0rd',
-  database: process.env.SQL_DATABASE || 'AuditPOC',
+  database: process.env.SQL_DATABASE || 'FinancialDashboard',
   server: process.env.SQL_SERVER || 'localhost',
   port: parseInt(process.env.SQL_PORT) || 1433,
   options: {

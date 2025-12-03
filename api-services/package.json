@@ -1,7 +1,7 @@
 {
-  "name": "audit-poc-api-services",
+  "name": "financial-dashboard-api-services",
   "version": "1.0.0",
-  "description": "Microservices API for Audit POC Data Integration",
+  "description": "Microservices API for Financial Dashboard Data Integration",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
@@ -19,7 +19,7 @@
     "data-integration",
     "compliance"
   ],
-  "author": "Audit POC Team",
+  "author": "Financial Dashboard Team",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",

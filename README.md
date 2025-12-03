@@ -1,4 +1,4 @@
-# TCS Hackathon - Audit POC
+# FINANCIAL DASHBOARD
 
 ## Complete Project Documentation
 
@@ -23,7 +23,7 @@
 
 ## Project Overview
 
-This is a **comprehensive Audit Data Management System** built for TCS Hackathon. It provides a complete solution for managing, analyzing, and querying audit data with intelligent AI-powered assistance.
+This is a **comprehensive Financial Dashboard System** for managing, analyzing, and querying financial data with intelligent AI-powered assistance.
 
 ### Key Capabilities
 
@@ -228,7 +228,7 @@ This is a **comprehensive Audit Data Management System** built for TCS Hackathon
 ### Step 1: Clone and Navigate
 
 ```bash
-cd tcs-hackothon-auditpoc
+cd FINANCIAL-DASHBOARD
 ```
 
 ### Step 2: Install Backend Dependencies
@@ -1201,7 +1201,7 @@ MIT License - See LICENSE file for details
 
 ## Contributors
 
-TCS Hackathon Team
+Financial Dashboard Team
 
 ---
 

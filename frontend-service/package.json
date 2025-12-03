@@ -1,7 +1,7 @@
 {
-  "name": "audit-poc-frontend",
+  "name": "financial-dashboard-frontend",
   "version": "1.0.0",
-  "description": "Next.js Frontend for Audit POC",
+  "description": "Next.js Frontend for Financial Dashboard",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
