@@ -52,21 +52,26 @@ router.post('/query', asyncHandler(async (req, res) => {
     }
 
     const duration = Date.now() - startTime;
-    logger.logLLM('RAG Query', ragResult.model || 'unknown', duration, true, {
+    
+    // Ensure response exists and is a string
+    const responseText = ragResult?.response || ragResult?.answer || 'I apologize, but I could not generate a response. Please try again.';
+    
+    logger.logLLM('RAG Query', ragResult?.model || 'unknown', duration, true, {
       requestId,
       query: query.substring(0, 100),
-      usedLLM: ragResult.usedLLM,
-      responseLength: ragResult.response?.length || 0
+      usedLLM: ragResult?.usedLLM || false,
+      responseLength: responseText?.length || 0
     });
 
     res.json({
       success: true,
       data: {
-        response: ragResult.response,
+        response: responseText,
         query: query,
-        context: ragResult.context,
-        usedLLM: ragResult.usedLLM,
-        processingTime: ragResult.processingTime || duration
+        context: ragResult?.context || {},
+        usedLLM: ragResult?.usedLLM || false,
+        processingTime: ragResult?.processingTime || duration,
+        model: ragResult?.model || 'fallback'
       },
       timestamp: new Date().toISOString(),
       requestId

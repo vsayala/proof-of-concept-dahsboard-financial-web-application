@@ -18,11 +18,18 @@ QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 COLLECTION_NAME = os.getenv("QDRANT_COLLECTION", "audit_documents")
 
 # Initialize Qdrant client
+qclient = None
 try:
-    qclient = QdrantClient(url=QDRANT_URL)
-    logger.info(f"Connected to Qdrant at {QDRANT_URL}")
+    qclient = QdrantClient(url=QDRANT_URL, timeout=10.0)
+    # Test connection by checking collections
+    try:
+        collections = qclient.get_collections()
+        logger.info(f"Connected to Qdrant at {QDRANT_URL}. Collections: {len(collections.collections)}")
+    except Exception as test_error:
+        logger.warning(f"Qdrant connection test failed: {test_error}. Will attempt connection on first query.")
 except Exception as e:
-    logger.error(f"Failed to connect to Qdrant: {e}")
+    logger.error(f"Failed to initialize Qdrant client: {e}")
+    logger.warning("Qdrant client will be None. Vector search will not work until Qdrant is available.")
     qclient = None
 
 def retrieve_top_k(query: str, k: int = 6, filter_dict: Optional[Dict] = None) -> List[Dict]:
@@ -38,8 +45,17 @@ def retrieve_top_k(query: str, k: int = 6, filter_dict: Optional[Dict] = None) -
         List of retrieved documents with id, score, and payload
     """
     if qclient is None:
-        logger.warning("Qdrant client not available, returning empty results")
-        return []
+        logger.warning("Qdrant client not available, attempting to reconnect...")
+        try:
+            # Reinitialize global qclient
+            global qclient
+            qclient = QdrantClient(url=QDRANT_URL, timeout=10.0)
+            # Test connection
+            qclient.get_collections()
+            logger.info("Successfully reconnected to Qdrant")
+        except Exception as reconnect_error:
+            logger.error(f"Failed to reconnect to Qdrant: {reconnect_error}")
+            return []
     
     try:
         # Get embedding model and encode query
@@ -237,13 +253,26 @@ def answer_query(
         prompt = build_prompt(query, hits)
         
         # Step 3: Generate answer using LLM
-        answer = call_local_llama(prompt, max_tokens=512, temperature=0.0)
+        try:
+            answer = call_local_llama(prompt, max_tokens=512, temperature=0.0)
+            
+            # Ensure answer is a valid string
+            if not answer or not isinstance(answer, str) or not answer.strip():
+                logger.warning("LLM returned empty or invalid response, using fallback")
+                answer = "I couldn't generate a response based on the retrieved context. Please try rephrasing your question."
+        except Exception as llm_error:
+            logger.error(f"LLM generation failed: {llm_error}")
+            answer = f"I encountered an error while generating a response: {str(llm_error)}. However, I found {len(hits)} relevant document(s) that might help answer your question."
         
         # Step 4: Verify numeric claims (optional)
-        if verify_numbers:
-            is_valid, warning = verify_numeric_claims(answer, hits)
-            if not is_valid:
-                answer += warning
+        if verify_numbers and answer:
+            try:
+                is_valid, warning = verify_numeric_claims(answer, hits)
+                if not is_valid:
+                    answer += warning
+            except Exception as verify_error:
+                logger.warning(f"Number verification failed: {verify_error}")
+                # Continue without verification
         
         # Step 5: Extract source IDs
         source_ids = [h["id"] for h in hits]
@@ -257,12 +286,22 @@ def answer_query(
         }
         
     except Exception as e:
-        logger.error(f"Error in RAG pipeline: {e}")
+        logger.error(f"Error in RAG pipeline: {e}", exc_info=True)
+        # Provide more helpful error messages based on error type
+        error_message = str(e)
+        if "Qdrant" in error_message or "connection" in error_message.lower():
+            error_message = "I couldn't connect to the vector database. Please ensure Qdrant is running and accessible."
+        elif "Ollama" in error_message or "LLM" in error_message:
+            error_message = "I couldn't connect to the language model. Please ensure Ollama is running and the model is available."
+        elif "embedding" in error_message.lower():
+            error_message = "I encountered an error while processing your query. Please try again."
+        
         return {
-            "answer": f"I encountered an error while processing your query: {str(e)}",
+            "answer": f"I encountered an error while processing your query: {error_message}",
             "sources": [],
             "hits": [],
             "retrieval_count": 0,
+            "query": query,
             "error": str(e)
         }
 

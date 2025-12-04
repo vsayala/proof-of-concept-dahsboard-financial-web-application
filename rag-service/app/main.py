@@ -120,10 +120,15 @@ async def chat_endpoint(request: ChatRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error processing chat request: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to process query: {str(e)}"
+        logger.error(f"Error processing chat request: {e}", exc_info=True)
+        # Return a graceful error response instead of raising
+        return ChatResponse(
+            answer=f"I encountered an error while processing your query: {str(e)}. Please try again or rephrase your question.",
+            sources=[],
+            hits=[],
+            retrieval_count=0,
+            query=request.query,
+            error=str(e)
         )
 
 @app.get("/api/search")
@@ -149,20 +154,38 @@ async def startup_event():
     """Initialize services on startup"""
     logger.info("Starting RAG Service...")
     
+    # Log configuration
+    logger.info(f"Configuration: OLLAMA_URL={os.getenv('OLLAMA_URL', 'http://localhost:11434')}, "
+                f"OLLAMA_MODEL={os.getenv('OLLAMA_MODEL', 'llama2:7b')}, "
+                f"QDRANT_URL={os.getenv('QDRANT_URL', 'http://localhost:6333')}, "
+                f"COLLECTION={os.getenv('QDRANT_COLLECTION', 'audit_documents')}")
+    
     # Pre-load embedding model
     try:
         embed_model = get_embed_model()
-        logger.info(f"Embedding model loaded: {embed_model.get_sentence_embedding_dimension()} dimensions")
+        logger.info(f"✅ Embedding model loaded: {embed_model.get_sentence_embedding_dimension()} dimensions")
     except Exception as e:
-        logger.error(f"Failed to load embedding model: {e}")
+        logger.error(f"❌ Failed to load embedding model: {e}")
+        logger.warning("RAG service will continue but embedding operations will fail")
+    
+    # Check Qdrant
+    try:
+        from .rag_pipeline import qclient
+        if qclient is not None:
+            collections = qclient.get_collections()
+            logger.info(f"✅ Qdrant connected. Collections: {len(collections.collections)}")
+        else:
+            logger.warning("⚠️  Qdrant client not initialized - vector search will not work")
+    except Exception as e:
+        logger.warning(f"⚠️  Qdrant check failed: {e}. Vector search may not work until Qdrant is available.")
     
     # Check Ollama
     if verify_ollama_available():
-        logger.info("Ollama is available")
+        logger.info("✅ Ollama is available")
     else:
-        logger.warning("Ollama is not available - LLM generation will fail")
+        logger.warning("⚠️  Ollama is not available - LLM generation will fail. Install and start Ollama to enable LLM responses.")
     
-    logger.info("RAG Service started successfully")
+    logger.info("🚀 RAG Service started successfully")
 
 if __name__ == "__main__":
     import uvicorn

@@ -15,6 +15,16 @@ class RAGService {
     this.openaiApiKey = process.env.OPENAI_API_KEY;
     this.useOllama = process.env.USE_OLLAMA !== 'false'; // Default to true
     this.maxRetrievalDocs = parseInt(process.env.RAG_MAX_DOCS) || 10;
+    
+    // Log configuration on initialization
+    logger.info('RAG Service initialized', {
+      ollamaUrl: this.ollamaUrl,
+      ollamaModel: this.ollamaModel,
+      useOllama: this.useOllama,
+      hasOpenAIKey: !!this.openaiApiKey,
+      pythonRAGEnabled: process.env.USE_PYTHON_RAG !== 'false',
+      pythonRAGUrl: process.env.PYTHON_RAG_SERVICE_URL || 'http://localhost:8001'
+    });
   }
 
   /**
@@ -835,15 +845,23 @@ class RAGService {
       if (usePythonRAG) {
         try {
           const pythonResult = await pythonRAGService.generateResponse(query, options);
-          if (pythonResult && pythonResult.response) {
+          if (pythonResult && (pythonResult.response || pythonResult.answer)) {
             logger.info('Using Python RAG service response', {
-              retrievalCount: pythonResult.context?.retrievalCount || 0
+              retrievalCount: pythonResult.context?.retrievalCount || pythonResult.retrievalCount || 0,
+              responseLength: (pythonResult.response || pythonResult.answer || '').length
             });
+            // Ensure response field exists
+            if (!pythonResult.response && pythonResult.answer) {
+              pythonResult.response = pythonResult.answer;
+            }
             return pythonResult;
+          } else {
+            logger.warn('Python RAG service returned empty response, falling back to Node.js RAG');
           }
         } catch (pythonError) {
           logger.warn('Python RAG service failed, falling back to Node.js RAG', {
-            error: pythonError.message
+            error: pythonError.message,
+            serviceUrl: process.env.PYTHON_RAG_SERVICE_URL || 'http://localhost:8001'
           });
           // Continue with Node.js implementation
         }
@@ -941,10 +959,16 @@ Please provide a helpful, accurate response based EXCLUSIVELY on the context abo
       
       logger.info(`RAG response generated in ${duration}ms (${usedOllama ? 'Ollama' : 'Fallback'}), hasData: ${hasData}`);
 
+      // Ensure response is a valid string
+      const finalResponse = (response && typeof response === 'string' && response.trim()) 
+        ? response.trim() 
+        : this.generateFallbackResponse(query, context);
+
       return {
-        response: response.trim(),
+        response: finalResponse,
         context: context,
         usedLLM: usedOllama || !!this.openaiApiKey,
+        model: usedOllama ? this.ollamaModel : (this.openaiApiKey ? 'gpt-3.5-turbo' : 'fallback'),
         processingTime: duration,
         hasData: hasData
       };
