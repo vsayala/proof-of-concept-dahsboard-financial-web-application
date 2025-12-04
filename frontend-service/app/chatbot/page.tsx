@@ -139,31 +139,51 @@ export default function ChatbotPage() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/chatbot/query', {
+      // Use environment variable or default to localhost:3000
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await axios.post(`${apiUrl}/api/chatbot/query`, {
         query: messageText,
         limit: 5
       }, {
-        timeout: 30000
+        timeout: 60000, // Increased timeout for LLM processing
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
-      if (response.data.success) {
+      if (response.data && response.data.success) {
+        const responseText = response.data.data?.response || response.data.data?.answer || 'I received your message but could not generate a response. Please try again.';
         const aiMessage: Message = {
           id: (Date.now() + 2).toString(),
-          text: response.data.data.response || 'Chatbot functionality coming soon. Please use the dashboard for data queries.',
+          text: responseText,
           isUser: false,
           timestamp: new Date()
         };
         setMessages(prev => prev.map(msg => msg.isLoading ? aiMessage : msg));
         
         setTimeout(() => {
-          startTypewriter(aiMessage.id, response.data.data.response);
+          startTypewriter(aiMessage.id, responseText);
         }, 300);
       } else {
-        throw new Error(response.data.error || 'Failed to get response');
+        throw new Error(response.data?.error || response.data?.message || 'Failed to get response');
       }
     } catch (error: any) {
       console.error('Error calling RAG API:', error);
-      const errorText = `I apologize, but I encountered an error while processing your request. ${error.response?.data?.details || error.message || 'Please try again.'}`;
+      let errorText = 'I apologize, but I encountered an error while processing your request.';
+      
+      if (error.response) {
+        // Server responded with error status
+        errorText = error.response.data?.message || 
+                   error.response.data?.error || 
+                   `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        // Request was made but no response received
+        errorText = 'Unable to connect to the server. Please ensure the API service is running on port 3000.';
+      } else {
+        // Error setting up request
+        errorText = error.message || 'An unexpected error occurred. Please try again.';
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 2).toString(),
         text: errorText,

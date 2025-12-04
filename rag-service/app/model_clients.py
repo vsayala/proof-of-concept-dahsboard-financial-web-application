@@ -70,14 +70,24 @@ def call_local_llama(prompt: str, max_tokens: int = 512, temperature: float = 0.
             response.raise_for_status()
             data = response.json()
             
-            # Extract response text
-            if data.get("message") and data["message"].get("content"):
-                return data["message"]["content"]
+            # Extract response text - handle multiple response formats
+            response_text = None
+            
+            # Try different response formats
+            if data.get("message") and isinstance(data["message"], dict):
+                response_text = data["message"].get("content")
+            elif data.get("message") and isinstance(data["message"], str):
+                response_text = data["message"]
             elif data.get("response"):
-                return data["response"]
+                response_text = data["response"]
+            elif isinstance(data, str):
+                response_text = data
+            
+            if response_text and isinstance(response_text, str) and response_text.strip():
+                return response_text.strip()
             else:
                 logger.warning(f"Unexpected Ollama response format: {data}")
-                return "I apologize, but I couldn't generate a response."
+                return "I apologize, but I couldn't generate a response. Please try again."
                 
     except httpx.TimeoutException:
         logger.error(f"Ollama request timed out after 120s")
